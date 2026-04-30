@@ -4,13 +4,15 @@ import pytest
 
 from pages.login_page import LoginPage
 
-URL = "https://playwright-demo.eventos.work/web/portal/529/event/3988/users/login"
+BASE_URL = os.getenv("BASE_URL", "https://playwright-demo.eventos.work")
+LOGIN_PATH = os.getenv("LOGIN_PATH", "/web/portal/529/event/3988/users/login")
+LOGIN_URL = f"{BASE_URL.rstrip('/')}{LOGIN_PATH}"
 
 
 @pytest.fixture
 def access_to_login_page(page):
     login_page = LoginPage(page)
-    login_page.navigate(URL)
+    login_page.navigate(LOGIN_URL)
     return login_page
 
 
@@ -21,4 +23,14 @@ def e2e_registered_credentials():
     password = os.getenv("E2E_REGISTERED_PASSWORD")
     if not email or not password:
         pytest.skip("E2E_REGISTERED_EMAIL と E2E_REGISTERED_PASSWORD を設定してください")
+    return {"email": email, "password": password}
+
+
+@pytest.fixture
+def admin_credentials():
+    """Optional admin credentials for tests that require login."""
+    email = os.getenv("E2E_EMAIL")
+    password = os.getenv("E2E_PASSWORD")
+    if not email or not password:
+        pytest.skip("E2E_EMAIL と E2E_PASSWORD を設定してください")
     return {"email": email, "password": password}
